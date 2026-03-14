@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DigitalThread.AI — AI Infrastructure for Digital Engineering</title>
+<meta name="description" content="Enterprise AI agents and training for hardware engineering and manufacturing. Trusted by Fortune 100 companies to build their digital engineering backbone.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --bg:rgba(0,0,0,0.92);
+  --bg-solid:#000;
+  --surface:rgba(10,10,10,0.85);
+  --surface-2:rgba(17,17,17,0.85);
+  --border:rgba(255,255,255,0.08);
+  --border-hover:rgba(255,255,255,0.15);
+  --text:#fff;
+  --text-secondary:#9a9a9a;
+  --text-muted:#5a5a5a;
+  --accent:#2563eb;
+  --accent-2:#06b6d4;
+  --accent-glow:rgba(37,99,235,0.15);
+}
+
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+
+body{
+  background:transparent;
+  color:var(--text);
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  overflow-x:hidden;
+  line-height:1.6;
+}
+
+/* ===== UTILITY ===== */
+.container{max-width:1200px;margin:0 auto;padding:0 40px}
+.label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;
+  font-weight:500;
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+  color:var(--accent-2);
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+}
+.label::before{
+  content:'';
+  width:8px;height:8px;
+  border-radius:50%;
+  background:var(--accent-2);
+  display:inline-block;
+  animation:pulse 2.5s ease-in-out infinite;
+}
+.gradient-text{
+  background:linear-gradient(135deg,#fff 0%,#6a6a6a 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+/* ===== NAV ===== */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:0 40px;height:72px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(0,0,0,0.6);
+  backdrop-filter:blur(20px) saturate(180%);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  border-bottom:1px solid var(--border);
+  transition:all 0.3s;
+}
+nav.scrolled{background:rgba(0,0,0,0.92)}
+.logo{display:flex;align-items:center;text-decoration:none;gap:10px}
+.nav-links{display:flex;align-items:center;gap:36px;list-style:none}
+.nav-links a{
+  font-size:13.5px;font-weight:400;
+  color:var(--text-secondary);
+  text-decoration:none;
+  transition:color 0.25s;
+  letter-spacing:0.01em;
+}
+.nav-links a:hover{color:var(--text)}
+
+/* Buttons */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font-family:'Inter',sans-serif;font-weight:500;
+  text-decoration:none;cursor:pointer;border:none;
+  transition:all 0.3s ease;
+}
+.btn-primary{
+  padding:10px 24px;
+  background:var(--text);color:var(--bg);
+  font-size:13.5px;font-weight:600;
+  border-radius:8px;
+  letter-spacing:0.01em;
+}
+.btn-primary:hover{
+  transform:translateY(-1px);
+  box-shadow:0 8px 32px rgba(255,255,255,0.15);
+}
+.btn-hero{
+  padding:16px 40px;
+  font-size:15px;font-weight:600;
+  border-radius:10px;
+  letter-spacing:0.01em;
+}
+.btn-hero.primary{
+  background:var(--text);color:var(--bg);
+}
+.btn-hero.primary:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 40px rgba(255,255,255,0.2);
+}
+.btn-hero.secondary{
+  background:transparent;
+  color:var(--text);
+  border:1px solid var(--border);
+}
+.btn-hero.secondary:hover{
+  border-color:var(--border-hover);
+  background:rgba(255,255,255,0.03);
+}
+.btn-ghost{
+  padding:14px 32px;
+  background:transparent;
+  border:1px solid var(--border);
+  color:var(--text);
+  font-size:14px;
+  border-radius:10px;
+}
+.btn-ghost:hover{
+  border-color:var(--border-hover);
+  background:rgba(255,255,255,0.03);
+}
+
+/* ===== NEURO NOISE GLOBAL BG ===== */
+#hero-video-bg{
+  position:fixed;top:0;left:0;width:100vw;height:100vh;
+  object-fit:cover;z-index:0;pointer-events:none;
+  opacity:0.35;
+}
+#hero-overlay{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.85) 50%, #000 80%);
+  z-index:0;pointer-events:none;
+}
+
+body>*{position:relative;z-index:1}
+
+/* ===== HERO ===== */
+#hero{
+  position:relative;
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  padding:160px 40px 120px;
+  overflow:hidden;
+}
+.hero-content{
+  position:relative;z-index:2;
+  max-width:860px;
+  text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:28px;
+}
+.hero-label{animation:fadeInDown 0.7s ease-out both}
+.hero-title{
+  font-family:'Outfit',sans-serif;
+  font-size:clamp(44px,5.5vw,80px);
+  font-weight:800;
+  letter-spacing:-0.045em;
+  line-height:1.05;
+  text-wrap:balance;
+  animation:fadeInUp 0.8s ease-out 0.15s both;
+}
+.hero-sub{
+  font-size:18px;font-weight:400;
+  color:var(--text-secondary);
+  line-height:1.7;max-width:540px;
+  animation:fadeInUp 0.8s ease-out 0.3s both;
+}
+.hero-ctas{
+  display:flex;gap:16px;margin-top:8px;
+  animation:fadeInUp 0.8s ease-out 0.45s both;
+}
+
+/* ===== LOGOS ===== */
+.logos-section{
+  padding:64px 0;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  overflow:hidden;
+  background:rgba(0,0,0,0.7);
+}
+.logos-label{
+  text-align:center;margin-bottom:40px;
+  font-size:13px;font-weight:400;color:var(--text-muted);
+  letter-spacing:0.04em;
+}
+.logos-track{
+  display:flex;align-items:center;gap:80px;
+  animation:marquee 40s linear infinite;
+  width:max-content;
+}
+.logos-track svg{
+  height:24px;width:auto;
+  opacity:0.3;
+  transition:opacity 0.3s;
+  flex-shrink:0;
+}
+.logos-track svg:hover{opacity:0.6}
+
+@keyframes marquee{
+  0%{transform:translateX(0)}
+  100%{transform:translateX(-50%)}
+}
+
+/* ===== METRICS ===== */
+.metrics-section{padding:100px 40px}
+.metrics-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:1px;background:var(--border);
+  border:1px solid var(--border);
+  border-radius:16px;overflow:hidden;
+}
+.metric-item{
+  background:rgba(0,0,0,0.8);
+  padding:48px 32px;
+  text-align:center;
+}
+.metric-number{
+  font-family:'Outfit',sans-serif;
+  font-size:48px;font-weight:700;
+  letter-spacing:-0.04em;
+  line-height:1;
+  margin-bottom:12px;
+  background:linear-gradient(135deg,var(--text) 0%,var(--text-secondary) 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.metric-label{
+  font-size:14px;color:var(--text-muted);
+  line-height:1.5;
+}
+
+/* ===== SECTIONS ===== */
+section{padding:140px 40px}
+.section-header{margin-bottom:80px}
+.section-header.centered{text-align:center}
+.section-header.centered .section-desc{margin:0 auto}
+
+.section-title{
+  font-family:'Outfit',sans-serif;
+  font-size:clamp(32px,3.5vw,52px);
+  font-weight:700;
+  letter-spacing:-0.035em;
+  line-height:1.1;
+  margin-top:20px;
+  text-wrap:balance;
+}
+.section-desc{
+  font-size:17px;color:var(--text-secondary);
+  line-height:1.7;max-width:520px;
+  margin-top:20px;
+}
+
+/* Split header */
+.split-header{
+  display:flex;justify-content:space-between;align-items:flex-end;
+  gap:60px;margin-bottom:80px;
+}
+.split-header .section-desc{margin-top:0}
+
+/* ===== PILLARS ===== */
+.pillars-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1px;background:var(--border);
+  border:1px solid var(--border);
+  border-radius:20px;overflow:hidden;
+}
+.pillar{
+  background:rgba(0,0,0,0.6);
+  padding:48px 40px;
+  display:flex;flex-direction:column;gap:24px;
+  transition:background 0.4s;
+}
+.pillar:hover{background:rgba(10,10,10,0.9)}
+.pillar-icon{
+  width:44px;height:44px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+}
+.pillar h3{
+  font-family:'Outfit',sans-serif;
+  font-size:22px;font-weight:600;
+  letter-spacing:-0.02em;
+}
+.pillar p{font-size:15px;color:var(--text-secondary);line-height:1.65}
+.pillar-link{
+  font-size:13px;font-weight:500;
+  color:var(--text-secondary);
+  text-decoration:none;
+  display:inline-flex;align-items:center;gap:6px;
+  margin-top:auto;
+  transition:color 0.25s,gap 0.25s;
+}
+.pillar-link:hover{color:var(--text);gap:10px}
+
+/* ===== SOLUTIONS ===== */
+#solutions{border-top:1px solid var(--border)}
+.solutions-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);
+  gap:16px;
+}
+.solution-card{
+  padding:40px 36px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  display:flex;flex-direction:column;gap:20px;
+  transition:border-color 0.3s,transform 0.3s;
+}
+.solution-card:hover{
+  border-color:var(--border-hover);
+  transform:translateY(-2px);
+}
+.solution-head{display:flex;align-items:center;gap:14px}
+.solution-icon{
+  width:40px;height:40px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.solution-card h3{
+  font-family:'Outfit',sans-serif;
+  font-size:18px;font-weight:600;
+  letter-spacing:-0.01em;
+}
+.solution-card p{font-size:14px;color:var(--text-secondary);line-height:1.6}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto}
+.tag{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px;font-weight:500;
+  padding:5px 10px;border-radius:6px;
+  letter-spacing:0.03em;
+}
+
+/* ===== TESTIMONIAL ===== */
+.testimonial-section{
+  padding:120px 40px;
+  border-top:1px solid var(--border);
+}
+.testimonial-card{
+  max-width:800px;margin:0 auto;
+  text-align:center;
+}
+.testimonial-quote{
+  font-family:'Outfit',sans-serif;
+  font-size:28px;font-weight:400;
+  letter-spacing:-0.02em;
+  line-height:1.5;
+  color:var(--text-secondary);
+  margin-bottom:40px;
+  font-style:italic;
+}
+.testimonial-quote em{
+  color:var(--text);
+  font-style:normal;
+  font-weight:500;
+}
+.testimonial-author{
+  display:flex;align-items:center;justify-content:center;gap:16px;
+}
+.author-avatar{
+  width:48px;height:48px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Outfit',sans-serif;
+  font-size:18px;font-weight:600;color:white;
+}
+.author-info{text-align:left}
+.author-name{font-size:15px;font-weight:600}
+.author-title{font-size:13px;color:var(--text-muted)}
+
+/* ===== TRAINING ===== */
+#training{border-top:1px solid var(--border)}
+.courses-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:16px;
+}
+.course-card{
+  padding:40px 36px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  display:flex;flex-direction:column;gap:20px;
+  transition:border-color 0.3s,transform 0.3s;
+}
+.course-card:hover{
+  border-color:var(--border-hover);
+  transform:translateY(-2px);
+}
+.course-num{
+  font-family:'Outfit',sans-serif;
+  font-size:60px;font-weight:800;
+  letter-spacing:-0.05em;line-height:1;
+  color:rgba(255,255,255,0.06);
+}
+.course-card h3{
+  font-family:'Outfit',sans-serif;
+  font-size:20px;font-weight:600;
+  letter-spacing:-0.01em;
+}
+.course-card p{font-size:14px;color:var(--text-secondary);line-height:1.6}
+.course-meta{display:flex;gap:8px;margin-top:auto}
+.meta-tag{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;font-weight:500;color:var(--text-muted);
+  padding:5px 12px;
+  border:1px solid var(--border);border-radius:6px;
+  letter-spacing:0.03em;
+}
+
+/* ===== OPEN SOURCE ===== */
+#opensource{border-top:1px solid var(--border)}
+.repos-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);
+  gap:16px;margin-bottom:48px;
+}
+.repo-card{
+  padding:36px 32px;background:var(--surface);
+  border:1px solid var(--border);border-radius:16px;
+  display:flex;flex-direction:column;gap:20px;
+  transition:border-color 0.3s,transform 0.3s;
+}
+.repo-card:hover{
+  border-color:rgba(52,211,153,0.2);
+  transform:translateY(-2px);
+}
+.repo-header{display:flex;align-items:center;justify-content:space-between}
+.repo-name{display:flex;align-items:center;gap:10px}
+.repo-name h3{font-size:17px;font-weight:600;font-family:'JetBrains Mono',monospace;letter-spacing:-0.02em}
+.repo-badge{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px;font-weight:500;color:#34D399;
+  padding:4px 10px;border-radius:6px;
+  background:rgba(52,211,153,0.08);
+}
+.repo-card p{font-size:14px;color:var(--text-secondary);line-height:1.6}
+.repo-meta{display:flex;align-items:center;gap:16px;margin-top:auto}
+.repo-meta-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-muted)}
+.lang-dot{width:10px;height:10px;border-radius:50%;background:#3572A5}
+.os-cta{text-align:center}
+
+/* ===== CTA ===== */
+#cta{
+  border-top:1px solid var(--border);
+  position:relative;text-align:center;
+  padding:160px 40px;
+}
+.cta-glow{
+  position:absolute;
+  width:800px;height:500px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(37,99,235,0.2) 0%,transparent 70%);
+  filter:blur(80px);
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  pointer-events:none;
+  opacity:0.7;
+}
+#cta .section-title{
+  font-size:clamp(36px,4.5vw,64px);
+  max-width:700px;margin:20px auto 24px;
+  position:relative;
+}
+#cta .section-desc{
+  max-width:480px;margin:0 auto 44px;
+  position:relative;
+}
+.cta-buttons{
+  display:flex;align-items:center;justify-content:center;
+  gap:16px;position:relative;
+}
+
+/* ===== FOOTER ===== */
+footer{
+  border-top:1px solid var(--border);
+  padding:56px 40px;
+  background:rgba(0,0,0,0.88);
+}
+.footer-inner{max-width:1200px;margin:0 auto}
+.footer-top{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  margin-bottom:40px;
+}
+.footer-brand{max-width:300px}
+.footer-brand p{font-size:13px;color:var(--text-muted);line-height:1.6;margin-top:16px}
+.footer-cols{display:flex;gap:64px}
+.footer-col h4{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;font-weight:500;
+  letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--text-muted);
+  margin-bottom:16px;
+}
+.footer-col a{
+  display:block;font-size:14px;color:var(--text-secondary);
+  text-decoration:none;margin-bottom:10px;
+  transition:color 0.2s;
+}
+.footer-col a:hover{color:var(--text)}
+.footer-bottom{
+  display:flex;justify-content:space-between;align-items:center;
+  padding-top:28px;border-top:1px solid var(--border);
+}
+.footer-bottom span{font-size:12px;color:var(--text-muted)}
+.social-links{display:flex;gap:16px}
+.social-links a{
+  color:var(--text-muted);
+  transition:color 0.2s;
+  display:flex;align-items:center;
+}
+.social-links a:hover{color:var(--text)}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeInUp{
+  from{opacity:0;transform:translateY(28px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes fadeInDown{
+  from{opacity:0;transform:translateY(-16px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes pulse{
+  0%,100%{opacity:1;transform:scale(1)}
+  50%{opacity:0.4;transform:scale(0.85)}
+}
+
+.reveal{
+  opacity:0;transform:translateY(30px);
+  transition:opacity 0.7s ease-out,transform 0.7s ease-out;
+}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* Staggered children */
+.stagger.visible > *{opacity:1;transform:translateY(0)}
+.stagger > *{
+  opacity:0;transform:translateY(20px);
+  transition:opacity 0.5s ease-out,transform 0.5s ease-out;
+}
+.stagger.visible > *:nth-child(1){transition-delay:0s}
+.stagger.visible > *:nth-child(2){transition-delay:0.08s}
+.stagger.visible > *:nth-child(3){transition-delay:0.16s}
+.stagger.visible > *:nth-child(4){transition-delay:0.24s}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:1024px){
+  nav{padding:0 24px}
+  .container{padding:0 24px}
+  section{padding:100px 24px}
+  .metrics-grid{grid-template-columns:repeat(2,1fr)}
+  .pillars-grid{grid-template-columns:1fr}
+  .solutions-grid{grid-template-columns:1fr}
+  .courses-grid{grid-template-columns:1fr}
+  .repos-grid{grid-template-columns:1fr}
+  .split-header{flex-direction:column;align-items:flex-start;gap:16px}
+  footer{padding:40px 24px}
+  .footer-top{flex-direction:column;gap:32px}
+}
+@media(max-width:768px){
+  .nav-links{display:none}
+  .hero-ctas{flex-direction:column;width:100%;max-width:320px}
+  .hero-ctas .btn{width:100%}
+  .metrics-grid{grid-template-columns:1fr}
+  .cta-buttons{flex-direction:column}
+  .cta-buttons .btn{width:100%;max-width:320px}
+  .footer-cols{flex-wrap:wrap;gap:32px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="main-nav">
+  <a href="#" class="logo">
+    <svg width="200" height="26" viewBox="0 0 440 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#2563eb"/><stop offset="100%" stop-color="#06b6d4"/></linearGradient></defs>
+      <g transform="translate(0,2)">
+        <path d="M4 6L22 22" stroke="#2563eb" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+        <path d="M4 42L22 28" stroke="#0ea5e9" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+        <path d="M48 24L34 24" stroke="#06b6d4" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+        <circle cx="4" cy="6" r="4" fill="#2563eb"/><circle cx="4" cy="42" r="4" fill="#0ea5e9"/><circle cx="48" cy="24" r="4" fill="#06b6d4"/>
+        <rect x="10" y="10" width="4" height="4" rx="1" fill="#2563eb" opacity=".5"/><rect x="10" y="35" width="4" height="4" rx="1" fill="#0ea5e9" opacity=".5"/><rect x="39" y="22" width="4" height="4" rx="1" fill="#06b6d4" opacity=".5"/>
+        <g transform="translate(27,24) rotate(45)"><rect x="-8" y="-8" width="16" height="16" rx="3" fill="none" stroke="url(#lg)" stroke-width="2"/></g>
+        <circle cx="27" cy="24" r="4" fill="url(#lg)"/>
+        <path d="M27 13L27 3" stroke="url(#lg)" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="2.5 2.5"/>
+      </g>
+      <text x="62" y="33" font-family="Outfit,sans-serif" font-size="28" fill="#e8e8f0" letter-spacing="0.5"><tspan font-weight="700">digital</tspan><tspan font-weight="400">thread</tspan><tspan font-weight="600" fill="url(#lg)">.ai</tspan></text>
+    </svg>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#solutions">Platform</a></li>
+    <li><a href="#training">Training</a></li>
+    <li><a href="#opensource">Open Source</a></li>
+    <li><a href="#cta">Contact</a></li>
+    <li><a href="#cta" class="btn btn-primary">Book a Demo</a></li>
+  </ul>
+</nav>
+
+<!-- FULLSCREEN VIDEO BACKGROUND -->
+<video id="hero-video-bg" autoplay loop muted playsinline src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260308_114720_3dabeb9e-2c39-4907-b747-bc3544e2d5b7.mp4"></video>
+<script>document.getElementById('hero-video-bg').playbackRate=0.5;</script>
+<div id="hero-overlay"></div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-content">
+    <div class="label hero-label">AI Infrastructure for Digital Engineering</div>
+    <h1 class="hero-title gradient-text">The intelligence layer for your digital thread</h1>
+    <p class="hero-sub">We build AI agents that unify data across PLM, CAD, ERP and manufacturing systems — giving Fortune&nbsp;100 engineering teams a single source of truth.</p>
+    <div class="hero-ctas">
+      <a href="#cta" class="btn btn-hero primary">Book a Demo <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <a href="#solutions" class="btn btn-hero secondary">Explore Platform</a>
+    </div>
+  </div>
+</section>
+
+<!-- LOGOS -->
+<div class="logos-section">
+  <div class="logos-label">Trusted by engineering leaders at</div>
+  <div style="overflow:hidden">
+    <div class="logos-track">
+      <svg viewBox="0 0 120 24" fill="#fff"><text x="0" y="18" font-family="Outfit,sans-serif" font-size="17" font-weight="600" letter-spacing="1">BOEING</text></svg>
+      <svg viewBox="0 0 140 24" fill="#fff"><text x="0" y="18" font-family="Outfit,sans-serif" font-size="17" font-weight="600" letter-spacing="1">LOCKHEED</text></svg>
+      <svg viewBox="0 0 100 24" fill="#fff"><text x="0" y="18" font-family="Outfit,sans-serif" font-size="16" font-weight="600" letter-spacing="1">SIEMENS</text></svg>
+      <svg viewBox="0 0 60 24" fill="#fff"><text x="0" y="18" font-family="Outfit,sans-serif" font-size="17" font-weight="600" letter-spacing="1">GE</text></svg>
+      <svg viewBox="0 0 150 24" fill="#fff"><text x="0" y="18" font-family="Outfit,sans-serif" font-size="17" font-weight="600" letter-spacing="1">RAYTHEON</text></svg>
+      <svg viewBox="0 0 80 24" fill="#fff"><text x="0" y="18" font-family="Outfit,sans-serif" font-size="17" font-weight="600" letter-spacing="1">BAE</text></svg>
+      <svg viewBox="0 0 120 24" fill="#fff"><text x="0" y="18" font-family="Outfit,sans-serif" font-size="17" font-weight="600" letter-spacing="1">TEXTRON</text></svg>
+      <svg viewBox="0 0 130 24" fill="#fff"><text x="0" y="18" font-family="Outfit,sans-serif" font-size="17" font-weight="600" letter-spacing="1">HONEYWELL</text></svg>
+      <!-- duplicate for seamless loop -->
+      <svg viewBox="0 0 120 24" fill="#fff"><text x="0" y="18" font-family="Outfit,sans-serif" font-size="17" font-weight="600" letter-spacing="1">BOEING</text></svg>
+      <svg viewBox="0 0 140 24" fill="#fff"><text x="0" y="18" font-family="Outfit,sans-serif" font-size="17" font-weight="600" letter-spacing="1">LOCKHEED</text></svg>
+      <svg viewBox="0 0 100 24" fill="#fff"><text x="0" y="18" font-family="Outfit,sans-serif" font-size="16" font-weight="600" letter-spacing="1">SIEMENS</text></svg>
+      <svg viewBox="0 0 60 24" fill="#fff"><text x="0" y="18" font-family="Outfit,sans-serif" font-size="17" font-weight="600" letter-spacing="1">GE</text></svg>
+      <svg viewBox="0 0 150 24" fill="#fff"><text x="0" y="18" font-family="Outfit,sans-serif" font-size="17" font-weight="600" letter-spacing="1">RAYTHEON</text></svg>
+      <svg viewBox="0 0 80 24" fill="#fff"><text x="0" y="18" font-family="Outfit,sans-serif" font-size="17" font-weight="600" letter-spacing="1">BAE</text></svg>
+      <svg viewBox="0 0 120 24" fill="#fff"><text x="0" y="18" font-family="Outfit,sans-serif" font-size="17" font-weight="600" letter-spacing="1">TEXTRON</text></svg>
+      <svg viewBox="0 0 130 24" fill="#fff"><text x="0" y="18" font-family="Outfit,sans-serif" font-size="17" font-weight="600" letter-spacing="1">HONEYWELL</text></svg>
+    </div>
+  </div>
+</div>
+
+<!-- METRICS -->
+<div class="metrics-section">
+  <div class="container">
+    <div class="metrics-grid reveal">
+      <div class="metric-item">
+        <div class="metric-number" data-target="98" data-suffix="%">0%</div>
+        <div class="metric-label">Data accuracy across<br>integrated systems</div>
+      </div>
+      <div class="metric-item">
+        <div class="metric-number" data-target="10" data-suffix="x">0x</div>
+        <div class="metric-label">Faster part classification<br>than manual processes</div>
+      </div>
+      <div class="metric-item">
+        <div class="metric-number" data-target="50" data-suffix="+">0+</div>
+        <div class="metric-label">PLM/CAD/ERP systems<br>our agents connect</div>
+      </div>
+      <div class="metric-item">
+        <div class="metric-number" data-target="24" data-suffix="/7">0/7</div>
+        <div class="metric-label">Autonomous agent<br>operation & monitoring</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WHAT WE DO -->
+<section id="what-we-do">
+  <div class="container">
+    <div class="section-header centered reveal">
+      <div class="label">What We Build</div>
+      <h2 class="section-title gradient-text">Three pillars of<br>digital transformation</h2>
+    </div>
+    <div class="pillars-grid stagger">
+      <div class="pillar">
+        <div class="pillar-icon" style="background:rgba(37,99,235,0.1)">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>AI Agent Platform</h3>
+        <p>Purpose-built AI agents that automate data classification, validation, and synchronization across your entire engineering lifecycle.</p>
+        <a href="#solutions" class="pillar-link">Explore agents <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon" style="background:rgba(124,58,237,0.1)">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M22 10v6M2 10l10-5 10 5-10 5-10-5z" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Enterprise Training</h3>
+        <p>Hands-on programs for PLM developers, solutions architects, and engineering leaders ready to operationalize AI within their organizations.</p>
+        <a href="#training" class="pillar-link">View programs <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon" style="background:rgba(52,211,153,0.1)">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" stroke="#34D399" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Open Source</h3>
+        <p>Production-grade PLM agent projects on GitHub — built in the open for the engineering community to fork, extend, and deploy.</p>
+        <a href="#opensource" class="pillar-link">View repos <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOLUTIONS -->
+<section id="solutions">
+  <div class="container">
+    <div class="split-header reveal">
+      <div>
+        <div class="label">Platform</div>
+        <h2 class="section-title">AI agents that manage<br>your digital thread</h2>
+      </div>
+      <p class="section-desc">From part classification to BOM validation, our agents automate the complex data operations that slow down engineering teams.</p>
+    </div>
+    <div class="solutions-grid stagger">
+      <div class="solution-card">
+        <div class="solution-head">
+          <div class="solution-icon" style="background:rgba(37,99,235,0.08)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h3>Part Classifier Agent</h3>
+        </div>
+        <p>Ingests engineering data, classifies components via LLM, scrapes distributor specs, and generates structured output — fully autonomous.</p>
+        <div class="tags">
+          <span class="tag" style="color:#60a5fa;background:rgba(37,99,235,0.08)">LLM Classification</span>
+          <span class="tag" style="color:#60a5fa;background:rgba(37,99,235,0.08)">Web Scraping</span>
+          <span class="tag" style="color:#60a5fa;background:rgba(37,99,235,0.08)">Excel I/O</span>
+        </div>
+      </div>
+      <div class="solution-card">
+        <div class="solution-head">
+          <div class="solution-icon" style="background:rgba(124,58,237,0.08)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 22v-7" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h3>BOM Intelligence</h3>
+        </div>
+        <p>AI-driven BOM analysis that detects inconsistencies, suggests alternatives, and enforces data integrity across your product lifecycle.</p>
+        <div class="tags">
+          <span class="tag" style="color:#a78bfa;background:rgba(124,58,237,0.08)">BOM Analysis</span>
+          <span class="tag" style="color:#a78bfa;background:rgba(124,58,237,0.08)">Validation</span>
+          <span class="tag" style="color:#a78bfa;background:rgba(124,58,237,0.08)">PLM Integration</span>
+        </div>
+      </div>
+      <div class="solution-card">
+        <div class="solution-head">
+          <div class="solution-icon" style="background:rgba(52,211,153,0.08)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="#34D399" stroke-width="1.5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="#34D399" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <h3>Data Flow Orchestration</h3>
+        </div>
+        <p>Bidirectional synchronization between CAD, PLM, ERP, and MES systems. Zero manual intervention, zero data drift.</p>
+        <div class="tags">
+          <span class="tag" style="color:#6ee7b7;background:rgba(52,211,153,0.08)">System Integration</span>
+          <span class="tag" style="color:#6ee7b7;background:rgba(52,211,153,0.08)">Data Sync</span>
+          <span class="tag" style="color:#6ee7b7;background:rgba(52,211,153,0.08)">ETL</span>
+        </div>
+      </div>
+      <div class="solution-card">
+        <div class="solution-head">
+          <div class="solution-icon" style="background:rgba(251,191,36,0.08)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" stroke="#FBBF24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h3>Custom Agent Development</h3>
+        </div>
+        <p>Bespoke AI agents engineered for your specific workflows, systems, and compliance requirements. We build, deploy, and support.</p>
+        <div class="tags">
+          <span class="tag" style="color:#fcd34d;background:rgba(251,191,36,0.08)">Custom Builds</span>
+          <span class="tag" style="color:#fcd34d;background:rgba(251,191,36,0.08)">Consulting</span>
+          <span class="tag" style="color:#fcd34d;background:rgba(251,191,36,0.08)">Managed</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIAL -->
+<div class="testimonial-section">
+  <div class="testimonial-card reveal">
+    <p class="testimonial-quote">"DigitalThread.AI's part classification agent <em>reduced our cataloging time by 85%</em> and improved data consistency across three PLM instances. This is the kind of AI that actually moves the needle."</p>
+    <div class="testimonial-author">
+      <div class="author-avatar">JR</div>
+      <div class="author-info">
+        <div class="author-name">James Richardson</div>
+        <div class="author-title">VP of Digital Engineering, Fortune 100 Aerospace</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TRAINING -->
+<section id="training">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="label" style="--dot-color:#7C3AED">Enterprise Programs</div>
+      <h2 class="section-title">Empower your team<br>to build with AI</h2>
+      <p class="section-desc">Intensive, hands-on training designed for PLM/CAD/CAE professionals who need to operationalize AI — not just understand it.</p>
+    </div>
+    <div class="courses-grid stagger">
+      <div class="course-card">
+        <div class="course-num">01</div>
+        <h3>AI Foundations for Engineers</h3>
+        <p>LLMs, prompt engineering, embeddings, and RAG — demystified for PLM and CAD professionals. No ML background required.</p>
+        <div class="course-meta"><span class="meta-tag">2 Days</span><span class="meta-tag">Beginner</span></div>
+      </div>
+      <div class="course-card">
+        <div class="course-num">02</div>
+        <h3>Building AI Agents for PLM</h3>
+        <p>Design, build, and deploy AI agents that integrate with Teamcenter, Windchill, 3DExperience, and other PLM platforms.</p>
+        <div class="course-meta"><span class="meta-tag">3 Days</span><span class="meta-tag">Intermediate</span></div>
+      </div>
+      <div class="course-card">
+        <div class="course-num">03</div>
+        <h3>AI Strategy for Architects</h3>
+        <p>Roadmapping AI adoption across your digital engineering stack. Governance, ROI frameworks, and implementation planning.</p>
+        <div class="course-meta"><span class="meta-tag">1 Day</span><span class="meta-tag">Advanced</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OPEN SOURCE -->
+<section id="opensource">
+  <div class="container">
+    <div class="section-header centered reveal">
+      <div class="label">Open Source</div>
+      <h2 class="section-title">Built in the open</h2>
+      <p class="section-desc">Production-grade AI agent projects on GitHub. Fork them, extend them, make them yours.</p>
+    </div>
+    <div class="repos-grid stagger">
+      <div class="repo-card">
+        <div class="repo-header">
+          <div class="repo-name">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" stroke="#34D399" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <h3>partclassifier</h3>
+          </div>
+          <span class="repo-badge">Public</span>
+        </div>
+        <p>AI agent that classifies mechanical parts from Excel, scrapes distributor websites for specs, and outputs structured data per class.</p>
+        <div class="repo-meta">
+          <div class="repo-meta-item"><div class="lang-dot"></div>Python</div>
+          <div class="repo-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>24</div>
+          <div class="repo-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M7 18V6l10 12V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>8</div>
+        </div>
+      </div>
+      <div class="repo-card">
+        <div class="repo-header">
+          <div class="repo-name">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" stroke="#34D399" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <h3>plm-bom-agent</h3>
+          </div>
+          <span class="repo-badge">Public</span>
+        </div>
+        <p>Open-source BOM analysis agent with validation rules, cross-reference checking, and PLM-agnostic API connectors.</p>
+        <div class="repo-meta">
+          <div class="repo-meta-item"><div class="lang-dot"></div>Python</div>
+          <div class="repo-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>12</div>
+          <div class="repo-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M7 18V6l10 12V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>3</div>
+        </div>
+      </div>
+    </div>
+    <div class="os-cta">
+      <a href="https://github.com/digitalthreadai" class="btn btn-ghost" target="_blank">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        View All on GitHub
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="cta-glow"></div>
+  <div class="label reveal">Let's Talk</div>
+  <h2 class="section-title gradient-text reveal">Ready to operationalize<br>your digital thread?</h2>
+  <p class="section-desc reveal" style="margin:0 auto 44px">Whether you need AI agents deployed, teams trained, or a strategic roadmap — we're ready when you are.</p>
+  <div class="cta-buttons reveal">
+    <a href="mailto:hello@digitalthread.ai" class="btn btn-hero primary">Book a Demo <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    <a href="mailto:hello@digitalthread.ai" class="btn btn-hero secondary">Contact Sales</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="#" class="logo">
+          <svg width="170" height="22" viewBox="0 0 440 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs><linearGradient id="fl" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#2563eb"/><stop offset="100%" stop-color="#06b6d4"/></linearGradient></defs>
+            <g transform="translate(0,2)">
+              <path d="M4 6L22 22" stroke="#2563eb" stroke-width="2.8" fill="none" stroke-linecap="round"/><path d="M4 42L22 28" stroke="#0ea5e9" stroke-width="2.8" fill="none" stroke-linecap="round"/><path d="M48 24L34 24" stroke="#06b6d4" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+              <circle cx="4" cy="6" r="4" fill="#2563eb"/><circle cx="4" cy="42" r="4" fill="#0ea5e9"/><circle cx="48" cy="24" r="4" fill="#06b6d4"/>
+              <rect x="10" y="10" width="4" height="4" rx="1" fill="#2563eb" opacity=".5"/><rect x="10" y="35" width="4" height="4" rx="1" fill="#0ea5e9" opacity=".5"/><rect x="39" y="22" width="4" height="4" rx="1" fill="#06b6d4" opacity=".5"/>
+              <g transform="translate(27,24) rotate(45)"><rect x="-8" y="-8" width="16" height="16" rx="3" fill="none" stroke="url(#fl)" stroke-width="2"/></g>
+              <circle cx="27" cy="24" r="4" fill="url(#fl)"/><path d="M27 13L27 3" stroke="url(#fl)" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="2.5 2.5"/>
+            </g>
+            <text x="62" y="33" font-family="Outfit,sans-serif" font-size="28" fill="#e8e8f0" letter-spacing="0.5"><tspan font-weight="700">digital</tspan><tspan font-weight="400">thread</tspan><tspan font-weight="600" fill="url(#fl)">.ai</tspan></text>
+          </svg>
+        </a>
+        <p>AI infrastructure for digital engineering. Building the intelligence layer for hardware engineering and manufacturing.</p>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col"><h4>Platform</h4><a href="#solutions">Part Classifier</a><a href="#solutions">BOM Intelligence</a><a href="#solutions">Data Flow</a><a href="#solutions">Custom Agents</a></div>
+        <div class="footer-col"><h4>Company</h4><a href="#">About</a><a href="#training">Training</a><a href="#">Careers</a><a href="#cta">Contact</a></div>
+        <div class="footer-col"><h4>Resources</h4><a href="#">Blog</a><a href="#">Documentation</a><a href="https://github.com/digitalthreadai" target="_blank">GitHub</a></div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 DigitalThread.AI</span>
+      <div class="social-links">
+        <a href="#" aria-label="LinkedIn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="4" cy="4" r="2" stroke="currentColor" stroke-width="1.5"/></svg></a>
+        <a href="#" aria-label="Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5 0-.28-.03-.56-.08-.83A7.72 7.72 0 0 0 23 3z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a href="https://github.com/digitalthreadai" aria-label="GitHub" target="_blank"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ===== NAV SCROLL =====
+const nav=document.getElementById('main-nav');
+window.addEventListener('scroll',()=>{nav.classList.toggle('scrolled',window.scrollY>50)});
+
+// ===== SCROLL REVEAL =====
+const obs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
+},{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal,.stagger').forEach(el=>obs.observe(el));
+
+// ===== COUNTER ANIMATION =====
+const counterObs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(!e.isIntersecting)return;
+    e.target.querySelectorAll('.metric-number').forEach(el=>{
+      const target=+el.dataset.target;
+      const suffix=el.dataset.suffix||'';
+      const duration=1800;
+      let start=null;
+      (function step(ts){
+        if(!start)start=ts;
+        const p=Math.min((ts-start)/duration,1);
+        const eased=1-Math.pow(1-p,3);
+        el.textContent=Math.floor(eased*target)+suffix;
+        if(p<1)requestAnimationFrame(step);
+      })(performance.now());
+    });
+    counterObs.unobserve(e.target);
+  });
+},{threshold:0.3});
+document.querySelectorAll('.metrics-grid').forEach(el=>counterObs.observe(el));
+</script>
+</body>
+</html>
