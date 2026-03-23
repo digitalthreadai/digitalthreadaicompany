@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.npmjs.com)",
+      "WebFetch(domain:github.com)",
+      "WebSearch",
+      "WebFetch(domain:paper.design)",
+      "Bash(claude mcp:*)",
+      "mcp__paper__get_basic_info",
+      "mcp__paper__get_font_family_info",
+      "mcp__paper__create_artboard",
+      "mcp__paper__write_html",
+      "mcp__paper__finish_working_on_nodes",
+      "WebFetch(domain:v0.app)",
+      "WebFetch(domain:v0.dev)",
+      "mcp__paper__get_screenshot",
+      "mcp__paper__get_tree_summary",
+      "mcp__paper__update_styles",
+      "mcp__paper__delete_nodes",
+      "WebFetch(domain:mixkit.co)",
+      "WebFetch(domain:pixabay.com)",
+      "WebFetch(domain:www.palantir.com)",
+      "WebFetch(domain:scale.com)",
+      "WebFetch(domain:www.databricks.com)",
+      "WebFetch(domain:www.anduril.com)",
+      "WebFetch(domain:www.snowflake.com)",
+      "WebFetch(domain:www.mckinsey.com)",
+      "WebFetch(domain:www.anthropic.com)",
+      "WebFetch(domain:openai.com)",
+      "WebFetch(domain:vercel.com)",
+      "WebFetch(domain:stripe.com)",
+      "WebFetch(domain:www.awwwards.com)",
+      "WebFetch(domain:www.figma.com)",
+      "WebFetch(domain:www.codrops.com)",
+      "WebFetch(domain:tympanus.net)",
+      "WebFetch(domain:www.framer.com)",
+      "mcp__Claude_Preview__preview_start"
+    ]
+  }
+}
