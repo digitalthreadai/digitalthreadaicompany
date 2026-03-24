@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ThreadAI PLM - Product & Architecture Roadmap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#0A0A0F;--surface:#12121A;--surface-hover:#1E1E2E;--terminal-bg:#1A1A2E;--terminal-border:#2A2A3E;
+--text:#E8E8ED;--muted:#8888A0;--primary:#3b82f6;--secondary:#22c55e;
+--green:#4ADE80;--blue:#60A5FA;--purple:#A78BFA;--amber:#FBBF24;--red:#F87171;--cyan:#22D3EE;
+--font-sans:'Inter',system-ui,sans-serif;--font-mono:'JetBrains Mono',monospace;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--terminal-border);border-radius:3px}
+
+/* Layout */
+.container{max-width:1200px;margin:0 auto;padding:0 32px}
+
+/* Hero */
+.hero{padding:60px 0 20px;text-align:center}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;background:var(--surface);border:1px solid var(--terminal-border);border-radius:20px;font-size:12px;color:var(--muted);font-weight:500;margin-bottom:20px}
+.hero-badge .dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hero-title{font-size:clamp(32px,5vw,52px);font-weight:800;letter-spacing:-.5px;background:linear-gradient(135deg,var(--blue),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:12px;line-height:1.15}
+.hero-sub{color:var(--muted);font-size:16px;max-width:640px;margin:0 auto;line-height:1.7}
+
+/* Navigation pills */
+.phase-nav{display:flex;justify-content:center;gap:12px;padding:32px 0 48px;flex-wrap:wrap}
+.phase-pill{padding:10px 24px;border-radius:24px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--terminal-border);background:var(--surface);color:var(--muted);text-decoration:none;transition:all .2s}
+.phase-pill:hover{border-color:var(--primary);color:var(--text)}
+.phase-pill.p1{border-color:var(--green);color:var(--green)}
+.phase-pill.p2{border-color:var(--blue);color:var(--blue)}
+.phase-pill.p3{border-color:var(--purple);color:var(--purple)}
+
+/* Timeline spine */
+.timeline{position:relative;padding:0 0 60px}
+.timeline::before{content:'';position:absolute;left:50%;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--green),var(--blue),var(--purple));opacity:.3;transform:translateX(-50%)}
+@media(max-width:900px){.timeline::before{left:28px}}
+
+/* Phase block */
+.phase{position:relative;margin-bottom:80px}
+.phase-header{text-align:center;position:relative;z-index:2;margin-bottom:40px}
+.phase-number{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;font-size:20px;font-weight:800;color:#fff;margin-bottom:16px;position:relative}
+.phase-number::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:2px solid;opacity:.3}
+.p1-color{background:linear-gradient(135deg,#059669,var(--green))}.p1-color::after{border-color:var(--green)}
+.p2-color{background:linear-gradient(135deg,#2563eb,var(--blue))}.p2-color::after{border-color:var(--blue)}
+.p3-color{background:linear-gradient(135deg,#7c3aed,var(--purple))}.p3-color::after{border-color:var(--purple)}
+.phase-title{font-size:28px;font-weight:800;margin-bottom:4px;letter-spacing:-.3px}
+.phase-timing{font-size:14px;color:var(--muted);font-weight:500}
+.phase-goal{display:inline-block;margin-top:10px;padding:6px 16px;border-radius:8px;font-size:13px;font-weight:600;border:1px solid}
+.goal-green{color:var(--green);border-color:rgba(74,222,128,.25);background:rgba(74,222,128,.06)}
+.goal-blue{color:var(--blue);border-color:rgba(96,165,250,.25);background:rgba(96,165,250,.06)}
+.goal-purple{color:var(--purple);border-color:rgba(167,139,250,.25);background:rgba(167,139,250,.06)}
+
+/* Architecture diagram */
+.arch-diagram{background:var(--surface);border:1px solid var(--terminal-border);border-radius:16px;padding:32px;margin-bottom:32px;overflow-x:auto}
+.arch-title{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);font-weight:600;margin-bottom:20px;text-align:center}
+
+/* Stack layers */
+.stack{display:flex;flex-direction:column;gap:2px;max-width:800px;margin:0 auto}
+.stack-layer{display:flex;align-items:stretch;border-radius:10px;overflow:hidden;min-height:56px}
+.stack-label{width:160px;padding:14px 16px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;justify-content:center;text-align:center;flex-shrink:0}
+.stack-content{flex:1;display:flex;gap:2px;padding:2px}
+.stack-block{flex:1;padding:12px 16px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;border-radius:6px;min-width:120px}
+.stack-block .block-title{font-size:13px;font-weight:700;margin-bottom:2px}
+.stack-block .block-sub{font-size:10px;opacity:.7;font-family:var(--font-mono)}
+
+/* Layer colors */
+.layer-ai .stack-label{background:rgba(167,139,250,.15);color:var(--purple)}
+.layer-ai .stack-block{background:rgba(167,139,250,.1);color:var(--purple)}
+.layer-ext .stack-label{background:rgba(96,165,250,.15);color:var(--blue)}
+.layer-ext .stack-block{background:rgba(96,165,250,.1);color:var(--blue)}
+.layer-core .stack-label{background:rgba(74,222,128,.15);color:var(--green)}
+.layer-core .stack-block{background:rgba(74,222,128,.1);color:var(--green)}
+.layer-infra .stack-label{background:rgba(136,136,160,.15);color:var(--muted)}
+.layer-infra .stack-block{background:rgba(136,136,160,.08);color:var(--muted)}
+
+/* New badge */
+.new-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+.badge-green{background:rgba(74,222,128,.15);color:var(--green)}
+.badge-blue{background:rgba(96,165,250,.15);color:var(--blue)}
+.badge-purple{background:rgba(167,139,250,.15);color:var(--purple)}
+.badge-amber{background:rgba(251,191,36,.15);color:var(--amber)}
+
+/* Feature cards */
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:32px}
+.feature-card{background:var(--surface);border:1px solid var(--terminal-border);border-radius:12px;padding:24px;transition:border-color .2s,transform .2s}
+.feature-card:hover{border-color:var(--primary);transform:translateY(-2px)}
+.feature-icon{font-size:28px;margin-bottom:12px}
+.feature-title{font-size:15px;font-weight:700;margin-bottom:6px}
+.feature-desc{font-size:13px;color:var(--muted);line-height:1.6}
+.feature-tech{margin-top:12px;padding-top:10px;border-top:1px solid var(--terminal-border);font-family:var(--font-mono);font-size:11px;color:var(--muted)}
+
+/* Benefit callout */
+.benefit{display:flex;align-items:flex-start;gap:12px;padding:16px 20px;border-radius:10px;margin-bottom:8px}
+.benefit-icon{font-size:18px;flex-shrink:0;margin-top:2px}
+.benefit-text{font-size:13px;line-height:1.6}
+.benefit-text strong{color:var(--text);font-weight:600}
+.benefit-green{background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.15)}
+.benefit-blue{background:rgba(96,165,250,.06);border:1px solid rgba(96,165,250,.15)}
+.benefit-purple{background:rgba(167,139,250,.06);border:1px solid rgba(167,139,250,.15)}
+
+/* Comparison table */
+.compare-table{width:100%;border-collapse:collapse;margin:24px 0;font-size:13px}
+.compare-table th{padding:12px 16px;text-align:left;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);background:var(--terminal-bg);border-bottom:1px solid var(--terminal-border)}
+.compare-table td{padding:12px 16px;border-bottom:1px solid var(--terminal-border);vertical-align:top}
+.compare-table tr:hover td{background:var(--surface-hover)}
+.compare-table .tech{font-family:var(--font-mono);font-size:12px;color:var(--blue)}
+.compare-table .check{color:var(--green)}
+.compare-table .warn{color:var(--amber)}
+
+/* Query comparison */
+.query-compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0}
+@media(max-width:768px){.query-compare{grid-template-columns:1fr}}
+.query-box{background:var(--terminal-bg);border:1px solid var(--terminal-border);border-radius:10px;overflow:hidden}
+.query-header{padding:10px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--terminal-border);display:flex;align-items:center;gap:8px}
+.query-header .qh-dot{width:8px;height:8px;border-radius:50%}
+.query-body{padding:16px;font-family:var(--font-mono);font-size:12px;line-height:1.8;white-space:pre-wrap;color:var(--muted)}
+.query-body .kw{color:var(--blue)}
+.query-body .fn{color:var(--green)}
+.query-body .str{color:var(--amber)}
+.query-body .cmt{color:#555;font-style:italic}
+
+/* Summary section */
+.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin:40px 0}
+@media(max-width:768px){.summary-grid{grid-template-columns:1fr}}
+.summary-card{background:var(--surface);border:1px solid var(--terminal-border);border-radius:14px;padding:28px;text-align:center}
+.summary-card .sc-number{font-size:36px;font-weight:800;margin-bottom:4px}
+.summary-card .sc-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;font-weight:600;margin-bottom:12px}
+.summary-card .sc-items{text-align:left;font-size:13px;color:var(--muted);line-height:1.8}
+.summary-card .sc-items span{color:var(--text);font-weight:500}
+
+/* Footer */
+.footer{text-align:center;padding:40px 0 60px;border-top:1px solid var(--terminal-border);margin-top:60px}
+.footer p{color:var(--muted);font-size:13px}
+.footer a{color:var(--primary);text-decoration:none}
+
+/* Responsive */
+@media(max-width:768px){
+.container{padding:0 16px}
+.stack-label{width:100px;font-size:10px}
+.stack-block{min-width:80px;padding:8px}
+.stack-block .block-title{font-size:11px}
+.phase-title{font-size:22px}
+.features{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-badge"><span class="dot"></span> Architecture Roadmap</div>
+  <h1 class="hero-title">ThreadAI PLM<br>Database & AI Evolution</h1>
+  <p class="hero-sub">A phased approach to scaling from RDBMS core to AI-augmented intelligence &mdash; without the risk of a full rewrite.</p>
+</div>
+
+<!-- Phase navigation -->
+<nav class="phase-nav">
+  <a href="#phase1" class="phase-pill p1">Phase 1 &mdash; Ship</a>
+  <a href="#phase2" class="phase-pill p2">Phase 2 &mdash; Semantic</a>
+  <a href="#phase3" class="phase-pill p3">Phase 3 &mdash; Graph</a>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- PHASE 1 -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="timeline">
+<section class="phase" id="phase1">
+  <div class="phase-header">
+    <div class="phase-number p1-color">1</div>
+    <h2 class="phase-title">Ship &amp; Validate</h2>
+    <div class="phase-timing">Now &mdash; First 100 Customers</div>
+    <div class="phase-goal goal-green">Goal: Product-market fit on proven tech</div>
+  </div>
+
+  <!-- Architecture Diagram -->
+  <div class="arch-diagram">
+    <div class="arch-title">Phase 1 Architecture</div>
+    <div class="stack">
+      <div class="stack-layer layer-ai">
+        <div class="stack-label">AI Layer</div>
+        <div class="stack-content">
+          <div class="stack-block"><div class="block-title">AI Copilot UI</div><div class="block-sub">embedded chat panel</div></div>
+          <div class="stack-block"><div class="block-title">LangGraph Agent</div><div class="block-sub">17 tools, ReAct</div></div>
+          <div class="stack-block"><div class="block-title">Two-Tier LLM</div><div class="block-sub">read: fast / write: careful</div></div>
+        </div>
+      </div>
+      <div class="stack-layer layer-core">
+        <div class="stack-label">Application</div>
+        <div class="stack-content">
+          <div class="stack-block"><div class="block-title">React SPA</div><div class="block-sub">TypeScript + component lib</div></div>
+          <div class="stack-block"><div class="block-title">API Routes</div><div class="block-sub">REST + RPC calls</div></div>
+          <div class="stack-block"><div class="block-title">OAuth / IdP</div><div class="block-sub">SSO + email/pwd</div></div>
+        </div>
+      </div>
+      <div class="stack-layer layer-infra">
+        <div class="stack-label">Database</div>
+        <div class="stack-content">
+          <div class="stack-block">
+            <div class="block-title">RDBMS (PostgreSQL)</div>
+            <div class="block-sub">18 tables, 80+ RLS policies</div>
+          </div>
+          <div class="stack-block">
+            <div class="block-title">Recursive CTEs</div>
+            <div class="block-sub">get_bom_tree() &middot; where_used()</div>
+          </div>
+          <div class="stack-block">
+            <div class="block-title">JSONB + FTS</div>
+            <div class="block-sub">GIN indexes, tsvector</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <div class="features">
+    <div class="feature-card">
+      <div class="feature-icon">&#x1F50D;</div>
+      <div class="feature-title">Full-Text Search</div>
+      <div class="feature-desc">Native tsvector search across part names, descriptions, and numbers. GIN-indexed for sub-millisecond lookups on 10K+ parts.</div>
+      <div class="feature-tech">CREATE INDEX ... USING GIN (to_tsvector(...))</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#x1F333;</div>
+      <div class="feature-title">BOM Tree Traversal</div>
+      <div class="feature-desc">Recursive CTEs with cycle detection traverse multi-level assemblies. <code>get_bom_tree()</code> and <code>where_used()</code> handle 10-level deep BOMs in &lt;50ms.</div>
+      <div class="feature-tech">WITH RECURSIVE ... NOT (id = ANY(path))</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#x1F916;</div>
+      <div class="feature-title">AI Agent (17 Tools)</div>
+      <div class="feature-desc">LangGraph ReAct agent with org-scoped context injection. Creates parts, traverses BOMs, manages ECOs, generates impact visualizations.</div>
+      <div class="feature-tech">Parts(5) + BOM(5) + ECO(7) + Viz(2)</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#x1F512;</div>
+      <div class="feature-title">Multi-Tenant RLS</div>
+      <div class="feature-desc">Row-Level Security on every table. Org isolation enforced at database level. Even the AI agent can't cross tenant boundaries.</div>
+      <div class="feature-tech">80+ policies &middot; get_user_org_ids()</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#x2699;&#xFE0F;</div>
+      <div class="feature-title">Workflow State Machines</div>
+      <div class="feature-desc">Database triggers enforce valid status transitions for Parts and ECOs. Multi-step approval with FOR UPDATE locking prevents race conditions.</div>
+      <div class="feature-tech">validate_part_transition() + process_review_decision()</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#x1F4CA;</div>
+      <div class="feature-title">Flexible Attributes</div>
+      <div class="feature-desc">JSONB attributes per part with GIN indexing. Category-specific schemas defined in <code>attribute_schemas</code> table. No rigid column structure.</div>
+      <div class="feature-tech">attributes jsonb + jsonb_path_ops index</div>
+    </div>
+  </div>
+
+  <!-- Benefits -->
+  <div class="benefit benefit-green">
+    <div class="benefit-icon">&#x2705;</div>
+    <div class="benefit-text"><strong>Why this works for Phase 1:</strong> Recursive CTEs ARE graph traversals on relational storage. A typical BOM (5-8 levels, thousands of parts) runs in &lt;50ms. You get ACID transactions, battle-tested security, and a proven RDBMS ecosystem &mdash; no graph database required.</div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- PHASE 2 -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section class="phase" id="phase2">
+  <div class="phase-header">
+    <div class="phase-number p2-color">2</div>
+    <h2 class="phase-title">Semantic Intelligence</h2>
+    <div class="phase-timing">After PMF &mdash; ~100 Customers / 1K+ Parts per Org</div>
+    <div class="phase-goal goal-blue">Goal: AI understands meaning, not just keywords</div>
+  </div>
+
+  <!-- Architecture Diagram -->
+  <div class="arch-diagram">
+    <div class="arch-title">Phase 2 Architecture &mdash; Vector Search Added</div>
+    <div class="stack">
+      <div class="stack-layer layer-ai">
+        <div class="stack-label">AI Layer</div>
+        <div class="stack-content">
+          <div class="stack-block"><div class="block-title">AI Copilot UI</div><div class="block-sub">embedded chat panel</div></div>
+          <div class="stack-block"><div class="block-title">LangGraph Agent</div><div class="block-sub">17+ tools, ReAct</div></div>
+          <div class="stack-block">
+            <div class="block-title">Semantic Search Tool</div>
+            <div class="block-sub">embedding-powered</div>
+            <span class="new-badge badge-blue">NEW</span>
+          </div>
+        </div>
+      </div>
+      <div class="stack-layer layer-ext">
+        <div class="stack-label">Extensions</div>
+        <div class="stack-content">
+          <div class="stack-block">
+            <div class="block-title">Vector Search</div>
+            <div class="block-sub">similarity search extension</div>
+            <span class="new-badge badge-blue">NEW</span>
+          </div>
+          <div class="stack-block">
+            <div class="block-title">Embeddings Pipeline</div>
+            <div class="block-sub">on INSERT/UPDATE trigger</div>
+            <span class="new-badge badge-blue">NEW</span>
+          </div>
+          <div class="stack-block">
+            <div class="block-title">Object Storage</div>
+            <div class="block-sub">documents bucket</div>
+            <span class="new-badge badge-blue">NEW</span>
+          </div>
+        </div>
+      </div>
+      <div class="stack-layer layer-core">
+        <div class="stack-label">Application</div>
+        <div class="stack-content">
+          <div class="stack-block"><div class="block-title">React SPA</div><div class="block-sub">TypeScript + component lib</div></div>
+          <div class="stack-block"><div class="block-title">API Routes</div><div class="block-sub">REST + RPC + FormData</div></div>
+          <div class="stack-block"><div class="block-title">OAuth / IdP</div><div class="block-sub">SSO + email/pwd</div></div>
+        </div>
+      </div>
+      <div class="stack-layer layer-infra">
+        <div class="stack-label">Database</div>
+        <div class="stack-content">
+          <div class="stack-block">
+            <div class="block-title">RDBMS (PostgreSQL)</div>
+            <div class="block-sub">18+ tables, RLS</div>
+          </div>
+          <div class="stack-block">
+            <div class="block-title">Recursive CTEs</div>
+            <div class="block-sub">BOM + where_used</div>
+          </div>
+          <div class="stack-block">
+            <div class="block-title">JSONB + FTS + Vectors</div>
+            <div class="block-sub">GIN + HNSW indexes</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Query comparison -->
+  <div class="query-compare">
+    <div class="query-box">
+      <div class="query-header"><span class="qh-dot" style="background:var(--green)"></span> Phase 1: Keyword Search</div>
+      <div class="query-body"><span class="cmt">-- User: "high temp fasteners"</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> parts
+<span class="kw">WHERE</span> name <span class="kw">ILIKE</span> <span class="str">'%high temp%'</span>
+   <span class="kw">OR</span> name <span class="kw">ILIKE</span> <span class="str">'%fastener%'</span>
+
+<span class="cmt">-- Misses: "M8 bolt, 316 stainless"
+-- (no keyword overlap)</span></div>
+    </div>
+    <div class="query-box">
+      <div class="query-header"><span class="qh-dot" style="background:var(--blue)"></span> Phase 2: Semantic Search</div>
+      <div class="query-body"><span class="cmt">-- User: "high temp fasteners"</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> parts
+<span class="kw">ORDER BY</span> embedding <span class="fn">&lt;=&gt;</span>
+  <span class="fn">embed</span>(<span class="str">'high temp fasteners'</span>)
+<span class="kw">LIMIT</span> 20;
+
+<span class="cmt">-- Finds: "M8 bolt, 316 stainless"
+-- (semantic meaning matches)</span></div>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <div class="features">
+    <div class="feature-card">
+      <div class="feature-icon">&#x1F9E0;</div>
+      <div class="feature-title">Vector Search Extension</div>
+      <div class="feature-desc">Add a <code>vector(1536)</code> column to the parts table. Runs as a database extension &mdash; no separate vector database needed. HNSW index for fast approximate nearest-neighbor search.</div>
+      <div class="feature-tech">ALTER TABLE parts ADD COLUMN embedding vector(1536)</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#x1F504;</div>
+      <div class="feature-title">Auto-Embedding Pipeline</div>
+      <div class="feature-desc">Database trigger on INSERT/UPDATE calls a serverless function that embeds <code>name + description + attributes</code> into a vector. Zero manual work &mdash; embeddings stay in sync.</div>
+      <div class="feature-tech">AFTER INSERT OR UPDATE ON parts &rarr; embed()</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#x1F50E;</div>
+      <div class="feature-title">Hybrid Search</div>
+      <div class="feature-desc">Combine keyword FTS + vector similarity for best results. Exact part number matches rank first, then semantic similarity fills the gaps. Agent gets a new <code>semantic_search</code> tool.</div>
+      <div class="feature-tech">RRF(tsvector_rank, 1 - cosine_distance)</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#x1F4C4;</div>
+      <div class="feature-title">Document Management</div>
+      <div class="feature-desc">Object storage for file uploads. Documents linked to parts and ECOs. Revision tracking with immutable storage. Agent gets 4 new document tools.</div>
+      <div class="feature-tech">bucket: documents &middot; path: {org_id}/{doc_id}/</div>
+    </div>
+  </div>
+
+  <!-- Benefits -->
+  <div class="benefit benefit-blue">
+    <div class="benefit-icon">&#x26A1;</div>
+    <div class="benefit-text"><strong>Why a vector extension, not a separate vector DB:</strong> It runs as a database extension in the SAME RDBMS instance. No sync layer, no extra infrastructure, no latency. Your RLS policies still apply to vector queries. Enable it with one SQL command: <code>CREATE EXTENSION vector;</code></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- PHASE 3 -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section class="phase" id="phase3">
+  <div class="phase-header">
+    <div class="phase-number p3-color">3</div>
+    <h2 class="phase-title">Graph Intelligence</h2>
+    <div class="phase-timing">At Scale &mdash; 10K+ BOM Edges / Complex Supply Chains</div>
+    <div class="phase-goal goal-purple">Goal: Real-time cross-entity reasoning for the AI agent</div>
+  </div>
+
+  <!-- Architecture Diagram -->
+  <div class="arch-diagram">
+    <div class="arch-title">Phase 3 Architecture &mdash; Graph Layer Added</div>
+    <div class="stack">
+      <div class="stack-layer layer-ai">
+        <div class="stack-label">AI Layer</div>
+        <div class="stack-content">
+          <div class="stack-block"><div class="block-title">AI Copilot UI</div><div class="block-sub">embedded chat panel</div></div>
+          <div class="stack-block"><div class="block-title">LangGraph Agent</div><div class="block-sub">25+ tools, ReAct</div></div>
+          <div class="stack-block"><div class="block-title">Semantic Search</div><div class="block-sub">vector extension</div></div>
+          <div class="stack-block">
+            <div class="block-title">Graph Reasoning</div>
+            <div class="block-sub">impact + lineage</div>
+            <span class="new-badge badge-purple">NEW</span>
+          </div>
+        </div>
+      </div>
+      <div class="stack-layer layer-ext">
+        <div class="stack-label">Extensions</div>
+        <div class="stack-content">
+          <div class="stack-block"><div class="block-title">Vector Search</div><div class="block-sub">semantic search</div></div>
+          <div class="stack-block">
+            <div class="block-title">Graph Extension</div>
+            <div class="block-sub">OpenCypher queries in RDBMS</div>
+            <span class="new-badge badge-purple">NEW</span>
+          </div>
+          <div class="stack-block">
+            <div class="block-title">Materialized Views</div>
+            <div class="block-sub">pre-computed graphs</div>
+            <span class="new-badge badge-purple">NEW</span>
+          </div>
+          <div class="stack-block"><div class="block-title">Object Storage</div><div class="block-sub">documents</div></div>
+        </div>
+      </div>
+      <div class="stack-layer layer-core">
+        <div class="stack-label">Application</div>
+        <div class="stack-content">
+          <div class="stack-block"><div class="block-title">React SPA</div><div class="block-sub">TypeScript + component lib</div></div>
+          <div class="stack-block"><div class="block-title">API Routes</div><div class="block-sub">REST + RPC + Graph</div></div>
+          <div class="stack-block"><div class="block-title">OAuth / IdP</div><div class="block-sub">SSO ready</div></div>
+        </div>
+      </div>
+      <div class="stack-layer layer-infra">
+        <div class="stack-label">Database</div>
+        <div class="stack-content">
+          <div class="stack-block">
+            <div class="block-title">Single RDBMS Instance</div>
+            <div class="block-sub">tables + vectors + graphs &mdash; all in one</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Query comparison -->
+  <div class="query-compare">
+    <div class="query-box">
+      <div class="query-header"><span class="qh-dot" style="background:var(--green)"></span> Phase 1: Multi-Tool Agent Call</div>
+      <div class="query-body"><span class="cmt">-- "What's affected if Supplier X has issues?"</span>
+<span class="cmt">-- Agent needs 4 separate tool calls:</span>
+
+1. <span class="fn">search_parts</span>(supplier=<span class="str">"X"</span>)
+2. <span class="kw">FOR EACH</span> part:
+   <span class="fn">get_where_used</span>(part_id)
+3. <span class="fn">get_bom_tree</span>(each assembly)
+4. <span class="fn">list_recent_ecos</span>(affected parts)
+
+<span class="cmt">-- 4 round-trips, manual correlation</span></div>
+    </div>
+    <div class="query-box">
+      <div class="query-header"><span class="qh-dot" style="background:var(--purple)"></span> Phase 3: Single Graph Traversal</div>
+      <div class="query-body"><span class="cmt">-- Same question, one query:</span>
+
+<span class="kw">MATCH</span> (s:Supplier {name:<span class="str">'X'</span>})
+      -[:SUPPLIES]->(p:Part)
+      <-[:CONTAINS*]-(assy:Part)
+      <-[:AFFECTS]-(eco:ECO)
+<span class="kw">RETURN</span> p, assy, eco
+
+<span class="cmt">-- 1 query, full context, &lt;100ms</span></div>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <div class="features">
+    <div class="feature-card">
+      <div class="feature-icon">&#x1F578;&#xFE0F;</div>
+      <div class="feature-title">Graph Query Extension</div>
+      <div class="feature-desc">OpenCypher graph queries running INSIDE the RDBMS. No separate graph database server. Same ACID transactions, same RLS security. Graph and relational data coexist in one DB.</div>
+      <div class="feature-tech">Cypher queries via SQL &middot; same DB instance</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#x1F5FA;&#xFE0F;</div>
+      <div class="feature-title">Materialized Impact Graph</div>
+      <div class="feature-desc">Pre-computed BOM traversals refreshed on changes. Agent reads the cache instead of running recursive CTEs live. Sub-millisecond impact analysis.</div>
+      <div class="feature-tech">REFRESH MATERIALIZED VIEW CONCURRENTLY</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#x1F517;</div>
+      <div class="feature-title">Cross-Entity Reasoning</div>
+      <div class="feature-desc">One query traverses: Part &rarr; BOM &rarr; ECO &rarr; Supplier &rarr; Regulation. The AI agent answers complex "what-if" questions in a single tool call instead of 4-5.</div>
+      <div class="feature-tech">MATCH path = (a)-[*1..6]->(b) RETURN path</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#x1F3ED;</div>
+      <div class="feature-title">Supplier & Compliance Graph</div>
+      <div class="feature-desc">New entities: Suppliers, Regulations, Certifications modeled as graph nodes. Enables "which products are non-compliant if regulation Z changes?" queries.</div>
+      <div class="feature-tech">(:Part)-[:GOVERNED_BY]->(:Regulation)</div>
+    </div>
+  </div>
+
+  <!-- Benefits -->
+  <div class="benefit benefit-purple">
+    <div class="benefit-icon">&#x1F3AF;</div>
+    <div class="benefit-text"><strong>Why a graph extension over a standalone graph DB:</strong> The graph extension runs inside the same RDBMS. No separate server, no sync layer, no second auth system. Your RLS policies, ACID transactions, and existing queries all continue to work. You add graph capabilities without abandoning your proven foundation.</div>
+  </div>
+  <div class="benefit benefit-purple">
+    <div class="benefit-icon">&#x1F4A1;</div>
+    <div class="benefit-text"><strong>When to consider a standalone graph DB:</strong> Only if your graph exceeds 10M+ edges with real-time 10+ hop traversals at sub-millisecond latency. Most PLM systems never reach this scale. If they do, you migrate the graph layer only &mdash; core PLM stays on the RDBMS.</div>
+  </div>
+</section>
+</div><!-- end timeline -->
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- COMPARISON TABLE -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section style="margin-bottom:60px">
+  <h2 style="font-size:24px;font-weight:800;margin-bottom:6px;letter-spacing:-.3px;text-align:center">Extension Comparison</h2>
+  <p style="text-align:center;color:var(--muted);font-size:14px;margin-bottom:24px">All extensions run inside the same RDBMS instance &mdash; no separate servers required</p>
+
+  <div style="overflow-x:auto;border:1px solid var(--terminal-border);border-radius:12px;background:var(--surface)">
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>Capability</th>
+        <th>Phase</th>
+        <th>What It Does</th>
+        <th>AI Agent Benefit</th>
+        <th>Infrastructure</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="tech">Full-Text Search (built-in)</td>
+        <td><span class="new-badge badge-green">Phase 1</span></td>
+        <td>Keyword search with ranking</td>
+        <td>Agent finds parts by name/number/description</td>
+        <td>Built-in, no extra setup</td>
+      </tr>
+      <tr>
+        <td class="tech">JSONB + GIN (built-in)</td>
+        <td><span class="new-badge badge-green">Phase 1</span></td>
+        <td>Flexible attributes per part, indexed for fast lookup</td>
+        <td>Agent queries by any attribute without schema changes</td>
+        <td>Built-in, no extra setup</td>
+      </tr>
+      <tr>
+        <td class="tech">Recursive CTEs (built-in)</td>
+        <td><span class="new-badge badge-green">Phase 1</span></td>
+        <td>BOM tree traversal + where-used impact analysis</td>
+        <td>Agent traverses assemblies, finds impact chains</td>
+        <td>Built-in, no extra setup</td>
+      </tr>
+      <tr>
+        <td class="tech">Vector Search Extension</td>
+        <td><span class="new-badge badge-blue">Phase 2</span></td>
+        <td>Vector similarity search (cosine distance)</td>
+        <td>Agent finds semantically similar parts, even without keyword overlap</td>
+        <td>DB extension, same instance</td>
+      </tr>
+      <tr>
+        <td class="tech">Graph Query Extension</td>
+        <td><span class="new-badge badge-purple">Phase 3</span></td>
+        <td>OpenCypher graph queries in the RDBMS</td>
+        <td>Agent answers multi-hop questions in one query instead of 4-5 tool calls</td>
+        <td>DB extension, same instance</td>
+      </tr>
+      <tr>
+        <td class="tech">Materialized Views (built-in)</td>
+        <td><span class="new-badge badge-purple">Phase 3</span></td>
+        <td>Pre-computed BOM/impact graphs, refreshed on change</td>
+        <td>Agent gets instant impact analysis without live recursion</td>
+        <td>Built-in, no extra setup</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SUMMARY -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section>
+  <h2 style="font-size:24px;font-weight:800;margin-bottom:6px;letter-spacing:-.3px;text-align:center">The Key Principle</h2>
+  <p style="text-align:center;color:var(--muted);font-size:14px;margin-bottom:32px;max-width:600px;margin-left:auto;margin-right:auto">One RDBMS. Three layers of intelligence. No rewrites, no sync headaches, no second auth system.</p>
+
+  <div class="summary-grid">
+    <div class="summary-card" style="border-top:3px solid var(--green)">
+      <div class="sc-number" style="color:var(--green)">P1</div>
+      <div class="sc-label">Ship</div>
+      <div class="sc-items">
+        <span>&#x2713; Recursive CTEs</span> for BOM graphs<br>
+        <span>&#x2713; Full-text search</span> for part lookup<br>
+        <span>&#x2713; JSONB</span> for flexible attributes<br>
+        <span>&#x2713; RLS</span> for multi-tenant security<br>
+        <span>&#x2713; 17-tool</span> AI agent
+      </div>
+    </div>
+    <div class="summary-card" style="border-top:3px solid var(--blue)">
+      <div class="sc-number" style="color:var(--blue)">P2</div>
+      <div class="sc-label">Semantic</div>
+      <div class="sc-items">
+        <span>+ Vector search</span> for meaning-based lookup<br>
+        <span>+ Embeddings pipeline</span> auto-sync<br>
+        <span>+ Hybrid search</span> (keyword + vector)<br>
+        <span>+ Document management</span><br>
+        <span>+ Semantic search</span> agent tool
+      </div>
+    </div>
+    <div class="summary-card" style="border-top:3px solid var(--purple)">
+      <div class="sc-number" style="color:var(--purple)">P3</div>
+      <div class="sc-label">Graph</div>
+      <div class="sc-items">
+        <span>+ Graph extension</span> for Cypher queries<br>
+        <span>+ Materialized views</span> for impact cache<br>
+        <span>+ Cross-entity reasoning</span> in one query<br>
+        <span>+ Supplier/compliance</span> graph nodes<br>
+        <span>+ 25+ tool</span> AI agent
+      </div>
+    </div>
+  </div>
+
+  <div class="benefit" style="background:rgba(136,136,160,.06);border:1px solid var(--terminal-border);margin-top:24px">
+    <div class="benefit-icon">&#x1F9E9;</div>
+    <div class="benefit-text"><strong>The architecture challenge:</strong> <em>"Show me how your AI agent reasons in real time about a design change, its regulatory impact, and the affected supply chain."</em> &mdash; Phase 1 handles design change impact via recursive CTEs. Phase 2 adds semantic understanding. Phase 3 adds the supplier and regulatory graph. And none of it requires abandoning the RDBMS.</div>
+  </div>
+</section>
+
+<!-- Footer -->
+<div class="footer">
+  <p>ThreadAI PLM Architecture Roadmap &middot; 2026</p>
+</div>
+
+</div><!-- container -->
+</body>
+</html>
